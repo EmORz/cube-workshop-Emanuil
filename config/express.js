@@ -14,5 +14,7 @@ module.exports = (app) => {
 
   //TODO: Setup the static files
 
+  app.use(express.json())
+  app.use(express.urlencoded())
   app.use('/static', express.static('static'))
 };

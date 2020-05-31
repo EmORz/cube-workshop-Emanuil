@@ -12,7 +12,7 @@ class Cube {
 
   }
 
-  save(){
+  save(callback){
     const newCube = {
       id: this.id,
       name: this.name,
@@ -20,7 +20,7 @@ class Cube {
       imageURL:this.imageURL,
       difficulty: this.difficulty
     }
-    saveCube(newCube)
+    saveCube(newCube, callback)
 
    
       
