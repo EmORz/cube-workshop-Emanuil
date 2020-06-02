@@ -1,11 +1,8 @@
-// TODO: Require Controllers...
 const { getAllCubes } = require("../controllers/cubes");
 const { getCube } = require("../controllers/database");
-const Cube = require("../models/cube")
+const Cube = require("../models/cube");
 
 module.exports = (app) => {
-  // TODO...
-
   app.get("/", (req, res) => {
     getAllCubes((cubes) => {
       res.render("index", {
@@ -25,22 +22,21 @@ module.exports = (app) => {
       });
     }),
     app.post("/create", (req, res) => {
-       const {name, description, imageUrl, difficultyLevel} = req.body
+      const { name, description, imageUrl, difficultyLevel } = req.body;
 
-       const cube = new Cube(name, description, imageUrl, difficultyLevel)
-       cube.save(()=>{
-         res.redirect('/')
-       })
-    })
-    app.get("/details/:id", (req, res) => {
-      getCube(req.params.id,(cube) => {
-          res.render("details", {
-            title: "Details | Cube Workshop",
-            ...cube
-          });
-        }
-      );
-    }),
+      const cube = new Cube(name, description, imageUrl, difficultyLevel);
+      cube.save(() => {
+        res.redirect("/");
+      });
+    });
+  app.get("/details/:id", (req, res) => {
+    getCube(req.params.id, (cube) => {
+      res.render("details", {
+        title: "Details | Cube Workshop",
+        ...cube,
+      });
+    });
+  }),
     app.get("*", (req, res) => {
       res.render("404", {
         title: "Error | Cube Workshop"
