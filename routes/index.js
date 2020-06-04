@@ -1,8 +1,15 @@
 const { getAllCubes } = require("../controllers/cubes");
+const accessoriesController = require("../controllers/accessory");
+
 const { getCube } = require("../controllers/database");
 const Cube = require("../models/cube");
 
 module.exports = (app) => {
+
+  app.get('/create/accessory', accessoriesController.createGet ),
+  app.post('/create/accessory', accessoriesController.createPost ),
+  app.get('/attach/accessory/:id', accessoriesController.attachGet ),
+  app.post('/attach/accessory/:id', accessoriesController.attachPost ),
   app.get("/", (req, res) => {
     getAllCubes((cubes) => {
       res.render("index", {
