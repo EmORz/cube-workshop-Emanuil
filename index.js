@@ -1,9 +1,27 @@
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV || "development";
 
-const config = require('./config/config')[env];
-const app = require('express')();
+const mongoose = require("mongoose");
 
-require('./config/express')(app);
-require('./routes')(app);
+const config = require("./config/config")[env];
+const app = require("express")();
 
-app.listen(config.port, console.log(`Listening on port ${config.port}! Now its up to you...`));
+mongoose.connect(config.databaseUrl,{
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+},
+  (err) => {
+    if (err) {
+      console.error(err);
+    }
+
+    console.log("DB is setuo and running!");
+  }
+);
+
+require("./config/express")(app);
+require("./routes")(app);
+
+app.listen(
+  config.port,
+  console.log(`Listening on port ${config.port}! Now its up to you...`)
+);
