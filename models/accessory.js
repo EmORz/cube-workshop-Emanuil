@@ -17,7 +17,7 @@ const accessoriesShema = new mongoose.Schema({
 });
 
 
-module.exports = mongoose.model("Accessories", accessoriesShema);
+module.exports = mongoose.model("Accessory", accessoriesShema);
 
 
 

@@ -1,25 +1,28 @@
-const { v4 } = require("uuid");
-const { saveCube } = require("../controllers/database");
+const mongoose = require("mongoose");
 
-class Cube {
-  constructor(name, description, imageURL, difficulty) {
-    this.id = v4();
-    this.name = name || "No name";
-    this.description = description;
-    this.imageURL = imageURL || "placeholder";
-    this.difficulty = difficulty || 0;
-  }
+const cubeShema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+    maxlength: 2000
+  },
+  imageURL: {
+    type: String,
+    required: true
+  },
+  difficulty: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 6
+  },
+  accessories: [{type: mongoose.Types.ObjectId, ref: "Accessory"}]
+});
 
-  save(callback) {
-    const newCube = {
-      id: this.id,
-      name: this.name,
-      description: this.description,
-      imageURL: this.imageURL,
-      difficulty: this.difficulty,
-    };
-    saveCube(newCube, callback);
-  }
-}
 
-module.exports = Cube;
+module.exports = mongoose.model("Cube", cubeShema);
+
