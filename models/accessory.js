@@ -16,6 +16,9 @@ const accessoriesShema = new mongoose.Schema({
   cubes: [{type: mongoose.Types.ObjectId, ref: "Cube"}]
 });
 
+accessoriesShema.path("imageUrl").validate(function (url) {
+  return url.includes("http") || url.includes("https");
+}, "Image url is not valid!");
 
 module.exports = mongoose.model("Accessory", accessoriesShema);
 

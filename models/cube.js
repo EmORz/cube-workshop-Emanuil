@@ -8,21 +8,23 @@ const cubeShema = new mongoose.Schema({
   description: {
     type: String,
     required: true,
-    maxlength: 2000
+    maxlength: 2000,
   },
   imageURL: {
     type: String,
-    required: true
+    required: true,
   },
   difficulty: {
     type: Number,
     required: true,
     min: 1,
-    max: 6
+    max: 6,
   },
-  accessories: [{type: mongoose.Types.ObjectId, ref: "Accessory"}]
+  accessories: [{ type: mongoose.Types.ObjectId, ref: "Accessory" }],
 });
 
+cubeShema.path("imageURL").validate(function (url) {
+  return url.includes("http") || url.includes("https");
+}, "Image url is not valid!");
 
 module.exports = mongoose.model("Cube", cubeShema);
-
