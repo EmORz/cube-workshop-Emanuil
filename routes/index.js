@@ -1,7 +1,11 @@
-const { getAllCubes } = require("../controllers/cubes");
-const accessoriesController = require("../controllers/accessory");
+const {
+  getAllCubes,
+  getCube,
+  updateCube,
+  getCubeWithAccessories,
+} = require("../controllers/cubes");
+const { getAccessories } = require("../controllers/accessory");
 
-const { getCube } = require("../controllers/cubes");
 const Cube = require("../models/cube");
 const Accessory = require("../models/accessory");
 
@@ -13,25 +17,44 @@ module.exports = (app) => {
   }),
     app.get("/attach/accessory/:id", async (req, res) => {
       const cube = await getCube(req.params.id);
+      const accessories = await getAccessories();
+
+      const cubeAccessories = cube.accessories.map((acc) =>
+        acc._id.valueOf().toString()
+      );
+      const notAttachAccesories = accessories.filter((acc) => {
+        const accessoriesString = acc._id.valueOf().toString();
+
+        return !cubeAccessories.includes(accessoriesString);
+      });
+
       res.render("attachAccessory", {
         title: "Attach Accessory",
         ...cube,
+        accessories: notAttachAccesories,
+        isFullAttached: cube.accessories.length === accessories.length,
       });
+    }),
+    app.post("/attach/accessory/:id", async (req, res) => {
+      const { accessory } = req.body;
+
+      await updateCube(req.params.id, accessory);
+
+      res.redirect(`/details/${req.params.id}`);
     }),
     app.post("/create/accessory", async (req, res, next) => {
       const { name, description, imageUrl } = req.body;
 
       const accessory = new Accessory({
-        name, description, imageUrl
-      })
+        name,
+        description,
+        imageUrl,
+      });
 
-     await accessory.save()
+      await accessory.save();
 
-     res.redirect('/create/accessory')
-
-
+      res.redirect("/create/accessory");
     }),
-    app.post("/attach/accessory/:id", accessoriesController.attachPost),
     app.get("/", async (req, res) => {
       const cubes = await getAllCubes();
 
@@ -59,17 +82,17 @@ module.exports = (app) => {
         imageURL: imageUrl,
         difficulty: difficultyLevel,
       });
-      console.log(cube);
       cube.save((err) => {
         if (err) {
           console.error(err);
+          res.redirect("/create");
+        } else {
+          res.redirect("/");
         }
-        res.redirect("/");
       });
     });
   app.get("/details/:id", async (req, res) => {
-    const cube = await getCube(req.params.id);
-
+    const cube = await getCubeWithAccessories(req.params.id);
     res.render("details", {
       title: "Details | Cube Workshop",
       ...cube,
