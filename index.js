@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 const config = require("./config/config")[env];
 const app = require("express")();
 
+
+
 mongoose.connect(config.databaseUrl,{
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -23,5 +25,5 @@ require("./routes")(app);
 
 app.listen(
   config.port,
-  console.log(`Listening on port ${config.port}! Now its up to you...`)
+  console.log(`Listening on port ${process.env.PORT}! Now its up to you...`)
 );
