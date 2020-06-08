@@ -3,6 +3,7 @@ const {
   getCube,
   updateCube,
   getCubeWithAccessories,
+  getAllCubesSearch
 } = require("../controllers/cubes");
 const { getAccessories } = require("../controllers/accessory");
 
@@ -56,12 +57,29 @@ module.exports = (app) => {
       res.redirect("/create/accessory");
     }),
     app.get("/", async (req, res) => {
-      const cubes = await getAllCubes();
+      const { from, to, search } = req.query;
+      //
+      // let query = {};
+      // if (search) {
+      //   query = { ...query };
+      // }
+      // if (to) {
+      //   query = { ...query, difficultyLevel: { $lte: +to } };
+      // }
+      // if (from) {
+      //   query = {
+      //     ...query,
+      //     difficultyLevel: { ...query.difficultyLevel, $gte: +from }
+      //   };
 
+      //const searchCubes = await  getAllCubesSearch(search);
+    
+      const cubes = await getAllCubes();
       res.render("index", {
         title: "Cube Workshop",
-        cubes,
+        cubes
       });
+
     }),
     app.get("/about", (req, res) => {
       res.render("about", {
