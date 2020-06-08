@@ -15,7 +15,17 @@ const getCubeWithAccessories = async (id) => {
   return cube;
 };
 
+<<<<<<< Updated upstream
 const updateCube = async (cubeId, accessoryId) =>{
+=======
+const getCubeWithAccessories = async (id) => {
+  const cube = await Cube.findById(id).populate('accessories').lean();
+console.log(cube)
+  return cube;
+};
+const updateCube = async (cubeId, accessoryId) =>{
+
+>>>>>>> Stashed changes
   await Cube.findByIdAndUpdate(cubeId, {
     $addToSet:{
       accessories: [accessoryId]
