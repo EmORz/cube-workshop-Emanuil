@@ -5,6 +5,12 @@ const getAllCubes = async () => {
   return cubes;
 };
 
+const getAllCubesSearch = async (search) => {
+  const cubes = await Cube.find(x => x.name ===search);
+  return cubes;
+};
+
+
 const getCube = async (id) => {
   const cube = await Cube.findById(id).lean();
   return cube;
@@ -26,5 +32,6 @@ module.exports = {
   getAllCubes,
   getCube,
   updateCube,
-  getCubeWithAccessories
+  getCubeWithAccessories,
+  getAllCubesSearch
 };
