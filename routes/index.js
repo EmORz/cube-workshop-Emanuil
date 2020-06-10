@@ -3,7 +3,7 @@ const {
   getCube,
   updateCube,
   getCubeWithAccessories,
-  getAllCubesSearch
+  searchCubes
 } = require("../controllers/cubes");
 const { getAccessories } = require("../controllers/accessory");
 
@@ -15,6 +15,19 @@ module.exports = (app) => {
     res.render("createAccessory", {
       title: "Create Accessory",
     });
+  }),
+  app.post("/create/accessory", async (req, res, next) => {
+    const { name, description, imageUrl } = req.body;
+
+    const accessory = new Accessory({
+      name,
+      description,
+      imageUrl,
+    });
+
+    await accessory.save();
+
+    res.redirect("/create/accessory");
   }),
     app.get("/attach/accessory/:id", async (req, res) => {
       const cube = await getCube(req.params.id);
@@ -43,42 +56,29 @@ module.exports = (app) => {
 
       res.redirect(`/details/${req.params.id}`);
     }),
-    app.post("/create/accessory", async (req, res, next) => {
-      const { name, description, imageUrl } = req.body;
-
-      const accessory = new Accessory({
-        name,
-        description,
-        imageUrl,
-      });
-
-      await accessory.save();
-
-      res.redirect("/create/accessory");
-    }),
+  
     app.get("/", async (req, res) => {
-      const { from, to, search } = req.query;
-      //
-      // let query = {};
-      // if (search) {
-      //   query = { ...query };
-      // }
-      // if (to) {
-      //   query = { ...query, difficultyLevel: { $lte: +to } };
-      // }
-      // if (from) {
-      //   query = {
-      //     ...query,
-      //     difficultyLevel: { ...query.difficultyLevel, $gte: +from }
-      //   };
-
-      //const searchCubes = await  getAllCubesSearch(search);
+      
     
       const cubes = await getAllCubes();
       res.render("index", {
         title: "Cube Workshop",
         cubes
       });
+
+    }),
+    app.post('/', async (req, res) => {
+      const { from, to, search } = req.body;
+
+     
+
+      const cubes = await searchCubes(search, from, to)
+
+      res.render('index', {
+        title: 'Cube Workshop | Search Result',
+        cubes
+      })
+      
 
     }),
     app.get("/about", (req, res) => {
