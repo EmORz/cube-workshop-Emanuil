@@ -88,10 +88,13 @@ const detailsGet = async (req, res, next) => {
 };
 
 const homeGet = async (req, res) => {
+  const user = req.cookies.auth_cookie;
+  console.log(user)
   const cubes = await getAllCubes();
   res.render("index", {
     title: "Cube Workshop",
     cubes,
+    user
   });
 };
 

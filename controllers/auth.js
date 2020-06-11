@@ -1,7 +1,9 @@
 const User = require("../models/user");
-const user = require("../models/user");
-// const utils = require('../utils');
-// const appConfig = require('../app-config');
+const tokenBlacklist = require('../models/token-blacklist')
+//const user = require("../models/user");
+const utils = require('../utils');
+const appConfig = require('../app-config');
+const jwt = require("../utils/jwt");
 
 const registerUserGet = async (req, res) => {
   res.render("register.hbs", {
@@ -18,18 +20,19 @@ const loginUserGet = async (req, res, next) => {
 const loginUserPost = async (req, res) => {
   const { username, password } = req.body;
 
-  const loginUser = await user
+ await User
     .findOne({ username })
-    .then((us) => us.matchPassword(password));
+    .then((user) => Promise.all([user, user? user.matchPassword(password): false]))
+    .then(([user, match])=>{
+      if(!match){
+        res.render('login.hbs', { massage: 'Wrong password or username!' });
+        return;
+      }
 
-    
+      const token = utils.jwt.createToken({id: user._id})
+      res.cookie(appConfig.authCookieName, token).redirect('/')
 
-  if (!loginUser) {
-    res.render("login", { message: "Wrong Pass" });
-    return;
-  } else {
-      console.log("You are in system!")
-  }
+    });
 };
 
 const regiterUserPost = async (req, res, next) => {
@@ -40,9 +43,18 @@ const regiterUserPost = async (req, res, next) => {
 
   res.redirect("login");
 };
+
+const logout = async (req, res) => {
+  const token = req.cookies[appConfig.authCookieName]
+  tokenBlacklist.create({token}).then(()=> {
+    res.clearCookie(appConfig.authCookieName).redirect('/')
+  })
+
+}
 module.exports = {
   registerUserGet,
   regiterUserPost,
   loginUserGet,
-  loginUserPost
+  loginUserPost,
+  logout
 };
