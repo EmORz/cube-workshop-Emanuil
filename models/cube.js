@@ -21,6 +21,7 @@ const cubeShema = new mongoose.Schema({
     max: 6,
   },
   accessories: [{ type: mongoose.Types.ObjectId, ref: "Accessory" }],
+  creatorId: { type: mongoose.Types.ObjectId, ref: "User" },
 });
 
 cubeShema.path("imageURL").validate(function (url) {

@@ -11,6 +11,18 @@ const Cube = require("../models/cube");
 const Accessory = require("../models/accessory");
 
 module.exports = (app) => {
+
+  app.get("/register", (req, res) =>{
+    res.render('register', {
+      title: "Register | Page"
+    })
+  }),
+  app.get('/login', (req, res) => {
+    res.render('login', {
+      title: "Login | Page"
+    })
+  })
+
   app.get("/create/accessory", (req, res) => {
     res.render("createAccessory", {
       title: "Create Accessory",
