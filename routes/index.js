@@ -1,136 +1,53 @@
 const {
-  getAllCubes,
-  getCube,
-  updateCube,
-  getCubeWithAccessories,
-  searchCubes
+  createCubeGet,
+  createCubePost,
+  detailsGet,
+  homeGet,
+  homePost,
 } = require("../controllers/cubes");
-const { getAccessories } = require("../controllers/accessory");
-
-const Cube = require("../models/cube");
-const Accessory = require("../models/accessory");
+const {
+  createAccessoryGet,
+  createAccessoryPost,
+  attachGet,
+  attachPost,
+} = require("../controllers/accessory");
+const {
+  registerUserGet,
+  loginUserGet,
+  loginUserPost,
+  regiterUserPost,
+} = require("../controllers/auth");
 
 module.exports = (app) => {
+  app.get("/", homeGet);
+  app.post("/", homePost);
 
-  app.get("/register", (req, res) =>{
-    res.render('register', {
-      title: "Register | Page"
-    })
-  }),
-  app.get('/login', (req, res) => {
-    res.render('login', {
-      title: "Login | Page"
-    })
-  })
+  app.get("/register", registerUserGet);
+  app.get("/login", loginUserGet);
+  app.post("/login", loginUserPost);
 
-  app.get("/create/accessory", (req, res) => {
-    res.render("createAccessory", {
-      title: "Create Accessory",
+  app.post("/register", regiterUserPost);
+
+  app.get("/create/accessory", createAccessoryGet);
+  app.post("/create/accessory", createAccessoryPost);
+
+  app.get("/attach/accessory/:id", attachGet);
+  app.post("/attach/accessory/:id", attachPost);
+
+  app.get("/create", createCubeGet);
+  app.post("/create", createCubePost);
+
+  app.get("/details/:id", detailsGet);
+
+  app.get("/about", (req, res) => {
+    res.render("about", {
+      title: "About | Cube Workshop",
     });
-  }),
-  app.post("/create/accessory", async (req, res, next) => {
-    const { name, description, imageUrl } = req.body;
+  });
 
-    const accessory = new Accessory({
-      name,
-      description,
-      imageUrl,
+  app.get("*", (req, res) => {
+    res.render("404", {
+      title: "Error | Cube Workshop",
     });
-
-    await accessory.save();
-
-    res.redirect("/create/accessory");
-  }),
-    app.get("/attach/accessory/:id", async (req, res) => {
-      const cube = await getCube(req.params.id);
-      const accessories = await getAccessories();
-
-      const cubeAccessories = cube.accessories.map((acc) =>
-        acc._id.valueOf().toString()
-      );
-      const notAttachAccesories = accessories.filter((acc) => {
-        const accessoriesString = acc._id.valueOf().toString();
-
-        return !cubeAccessories.includes(accessoriesString);
-      });
-
-      res.render("attachAccessory", {
-        title: "Attach Accessory",
-        ...cube,
-        accessories: notAttachAccesories,
-        isFullAttached: cube.accessories.length === accessories.length,
-      });
-    }),
-    app.post("/attach/accessory/:id", async (req, res) => {
-      const { accessory } = req.body;
-
-      await updateCube(req.params.id, accessory);
-
-      res.redirect(`/details/${req.params.id}`);
-    }),
-  
-    app.get("/", async (req, res) => {
-      
-    
-      const cubes = await getAllCubes();
-      res.render("index", {
-        title: "Cube Workshop",
-        cubes
-      });
-
-    }),
-    app.post('/', async (req, res) => {
-      const { from, to, search } = req.body;
-
-     
-
-      const cubes = await searchCubes(search, from, to)
-
-      res.render('index', {
-        title: 'Cube Workshop | Search Result',
-        cubes
-      })
-      
-
-    }),
-    app.get("/about", (req, res) => {
-      res.render("about", {
-        title: "About | Cube Workshop",
-      });
-    }),
-    app.get("/create", (req, res) => {
-      res.render("create", {
-        title: "Create | Cube Workshop",
-      });
-    }),
-    app.post("/create", (req, res) => {
-      const { name, description, imageUrl, difficultyLevel } = req.body;
-
-      const cube = new Cube({
-        name,
-        description,
-        imageURL: imageUrl,
-        difficulty: difficultyLevel,
-      });
-      cube.save((err) => {
-        if (err) {
-          console.error(err);
-          res.redirect("/create");
-        } else {
-          res.redirect("/");
-        }
-      });
-    });
-  app.get("/details/:id", async (req, res) => {
-    const cube = await getCubeWithAccessories(req.params.id);
-    res.render("details", {
-      title: "Details | Cube Workshop",
-      ...cube,
-    });
-  }),
-    app.get("*", (req, res) => {
-      res.render("404", {
-        title: "Error | Cube Workshop",
-      });
-    });
+  });
 };
