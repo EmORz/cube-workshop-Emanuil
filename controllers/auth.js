@@ -1,6 +1,5 @@
 const User = require("../models/user");
 const tokenBlacklist = require('../models/token-blacklist')
-//const user = require("../models/user");
 const utils = require('../utils');
 const appConfig = require('../app-config');
 const jwt = require("../utils/jwt");
@@ -49,8 +48,8 @@ const logout = async (req, res) => {
   tokenBlacklist.create({token}).then(()=> {
     res.clearCookie(appConfig.authCookieName).redirect('/')
   })
-
 }
+
 module.exports = {
   registerUserGet,
   regiterUserPost,

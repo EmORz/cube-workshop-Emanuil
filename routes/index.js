@@ -4,6 +4,10 @@ const {
   detailsGet,
   homeGet,
   homePost,
+  editCubeGet,
+  editCubePost,
+  deleteCubeGet,
+  deleteCubePost
 } = require("../controllers/cubes");
 const {
   createAccessoryGet,
@@ -38,8 +42,14 @@ module.exports = (app) => {
   app.get("/attach/accessory/:id", attachGet);
   app.post("/attach/accessory/:id", attachPost);
 
-  app.get("/create", auth(), createCubeGet);
-  app.post("/create", auth(), createCubePost);
+  app.get("/create",  createCubeGet);
+  app.post("/create",  createCubePost);
+
+  app.get('/edit/:id', editCubeGet)
+  app.post('/edit/:id', editCubePost)
+
+  app.get('/delete/:id', deleteCubeGet)
+  app.post('/delete/:id', deleteCubePost)
 
   app.get("/details/:id" ,detailsGet);
 
