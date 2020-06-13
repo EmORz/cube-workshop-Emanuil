@@ -7,6 +7,7 @@ var jwt = require("jsonwebtoken");
 const secret = "shhhhh";
 
 const bcrypt = require("bcrypt");
+const { use } = require("../routes");
 const saltRounds = 10;
 
 const registerUserGet = async (req, res) => {
@@ -24,19 +25,23 @@ const loginUserGet = async (req, res, next) => {
 const loginUserPost = async (req, res) => {
   const { username, password } = req.body;
 
-  await User.findOne({ username })
-    .then((user) =>
-      Promise.all([user, user ? user.matchPassword(password) : false])
-    )
-    .then(([user, match]) => {
-      if (!match) {
-        res.render("login.hbs", { massage: "Wrong password or username!" });
-        return;
-      }
+  const user = await User.findOne({ username });
 
-      const token = utils.jwt.createToken({ id: user._id });
-      res.cookie(appConfig.authCookieName, token).redirect("/");
+  const userPass = user.password? user.password:"polop";
+  
+  console.log(userPass)
+  const status = await bcrypt.compare(password, userPass);
+
+  if (status) {
+    const token = generateToken({
+      userID: user._id,
+      username: user.username,
     });
+    res.cookie("aid", token);
+    res.redirect("/");
+  } else{
+    res.redirect("/login")
+  }
 };
 
 const regiterUserPost = async (req, res) => {
@@ -51,11 +56,20 @@ const regiterUserPost = async (req, res) => {
 
   const userObj = await user.save();
 
-  const token =  jwt.sign({userID: userObj._id, username: userObj.username}, secret);
-  res.cookie('aid', token)
+  const token = generateToken({
+    userID: userObj._id,
+    username: userObj.username,
+  });
 
-  res.redirect('/')
+  res.cookie("aid", token);
 
+  res.redirect("/");
+};
+
+const generateToken = (data) => {
+  const token = jwt.sign(data, secret);
+
+  return token;
 };
 
 const logout = async (req, res) => {
