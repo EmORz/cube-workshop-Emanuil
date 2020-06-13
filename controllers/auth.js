@@ -14,6 +14,24 @@ const generateToken = (data) => {
 
   return token;
 };
+
+const checkAuthentcation = (req, res, next) => {
+  const token = req.cookies["aid"];
+
+  if (!token) {
+    return res.redirect("/");
+  }
+
+  try {
+    const decodedObj = jwt.verify(token, secret);
+    next()
+  } catch (e) {
+    res.redirect("/login");
+  }
+ 
+
+  
+};
 const registerUserGet = async (req, res) => {
   res.render("register.hbs", {
     title: "Register | Page",
@@ -31,9 +49,9 @@ const loginUserPost = async (req, res) => {
 
   const user = await User.findOne({ username });
 
-  const userPass = user.password? user.password:"polop";
-  
-  console.log(userPass)
+  const userPass = user.password ? user.password : "polop";
+
+  console.log(userPass);
   const status = await bcrypt.compare(password, userPass);
 
   if (status) {
@@ -43,8 +61,8 @@ const loginUserPost = async (req, res) => {
     });
     res.cookie("aid", token);
     res.redirect("/");
-  } else{
-    res.redirect("/login")
+  } else {
+    res.redirect("/login");
   }
 };
 
@@ -70,13 +88,12 @@ const regiterUserPost = async (req, res) => {
   res.redirect("/");
 };
 
+const logout =  (req, res) => {
 
+  res.clearCookie('aid')
 
-const logout = async (req, res) => {
-  const token = req.cookies[appConfig.authCookieName];
-  tokenBlacklist.create({ token }).then(() => {
-    res.clearCookie(appConfig.authCookieName).redirect("/");
-  });
+  res.redirect('/')
+  
 };
 
 module.exports = {
@@ -85,4 +102,5 @@ module.exports = {
   loginUserGet,
   loginUserPost,
   logout,
+  checkAuthentcation,
 };
