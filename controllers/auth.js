@@ -7,9 +7,13 @@ var jwt = require("jsonwebtoken");
 const secret = "shhhhh";
 
 const bcrypt = require("bcrypt");
-const { use } = require("../routes");
 const saltRounds = 10;
 
+const generateToken = (data) => {
+  const token = jwt.sign(data, secret);
+
+  return token;
+};
 const registerUserGet = async (req, res) => {
   res.render("register.hbs", {
     title: "Register | Page",
@@ -66,11 +70,7 @@ const regiterUserPost = async (req, res) => {
   res.redirect("/");
 };
 
-const generateToken = (data) => {
-  const token = jwt.sign(data, secret);
 
-  return token;
-};
 
 const logout = async (req, res) => {
   const token = req.cookies[appConfig.authCookieName];

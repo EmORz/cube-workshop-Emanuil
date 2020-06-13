@@ -1,4 +1,6 @@
 const Cube = require("../models/cube");
+const jwt = require("jsonwebtoken");
+const secret = "shhhhh";
 
 const getAllCubes = async () => {
   const cubes = await Cube.find().lean();
@@ -62,14 +64,18 @@ const createCubeGet = async (req, res, next) => {
 
 const createCubePost = async (req, res, next) => {
   const { name, description, imageUrl, difficultyLevel } = req.body;
+  const token = req.cookies["aid"];
+
+  const decodedObj = jwt.verify(token, secret);
   const cube = new Cube({
     name,
     description,
     imageURL: imageUrl,
     difficulty: difficultyLevel,
+    creatorId: decodedObj.userID,
   });
 
-  cube.save((err) => {
+  await cube.save((err) => {
     if (err) {
       console.error(err);
       res.redirect("/create");
@@ -135,32 +141,34 @@ const deleteCubeGet = (req, res) => {
 
 const editCubeGet = async (req, res, next) => {
   const id = req.params.id;
-  await Cube.findById(id).then((cube) => {
-    const options = [
-      { title: "1 - Very Easy", selected: 1 === cube.difficulty },
-      { title: "2 - Easy", selected: 2 === cube.difficulty },
-      { title: "3 - Medium (Standart 3x3)", selected: 3 === cube.difficulty },
-      { title: "4 - Intermediate", selected: 4 === cube.difficulty },
-      { title: "5 - Expert", selected: 5 === cube.difficulty },
-      { title: "6 - Hardcore", selected: 6 === cube.difficulty },
-    ];
-    res.render("editCube", {
-      title: "Edit Cube",
-      cube,
-      options,
-    });
-  }).catch(next);
+  await Cube.findById(id)
+    .then((cube) => {
+      const options = [
+        { title: "1 - Very Easy", selected: 1 === cube.difficulty },
+        { title: "2 - Easy", selected: 2 === cube.difficulty },
+        { title: "3 - Medium (Standart 3x3)", selected: 3 === cube.difficulty },
+        { title: "4 - Intermediate", selected: 4 === cube.difficulty },
+        { title: "5 - Expert", selected: 5 === cube.difficulty },
+        { title: "6 - Hardcore", selected: 6 === cube.difficulty },
+      ];
+      res.render("editCube", {
+        title: "Edit Cube",
+        cube,
+        options,
+      });
+    })
+    .catch(next);
 };
 
 const editCubePost = async (req, res, next) => {
   const id = req.params.id;
-  console.log(id)
-  const{name = null, description=null, imageURL=null, difficulty=null} = req.body
-
-
-  
-
-
+  console.log(id);
+  const {
+    name = null,
+    description = null,
+    imageURL = null,
+    difficulty = null,
+  } = req.body;
 };
 
 module.exports = {
