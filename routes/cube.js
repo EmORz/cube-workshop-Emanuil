@@ -1,4 +1,5 @@
 const {Router} = require('express')
+const {checkAuthentcation} = require('../controllers/auth')
 const {
     createCubeGet,
     createCubePost,
@@ -16,7 +17,7 @@ const router = Router()
 router.get("/", homeGet);
 router.post("/", homePost);
 
-router.get("/create",  createCubeGet);
+router.get("/create", checkAuthentcation, createCubeGet);
 router.post("/create",  createCubePost);
 
 router.get('/edit/:id', editCubeGet)

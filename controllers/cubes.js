@@ -1,4 +1,5 @@
 const Cube = require("../models/cube");
+const {checkAuthentcation} = require('../controllers/auth')
 const jwt = require("jsonwebtoken");
 const secret = "shhhhh";
 
