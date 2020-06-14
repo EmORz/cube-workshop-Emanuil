@@ -19,7 +19,7 @@ const checkAuthentcation = (req, res, next) => {
   const token = req.cookies["aid"];
 
   if (!token) {
-    return res.redirect("/");
+    return res.redirect("/login");
   }
 
   try {
