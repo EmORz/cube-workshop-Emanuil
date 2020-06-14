@@ -1,5 +1,5 @@
 const Cube = require("../models/cube");
-const {checkAuthentcation} = require('../controllers/auth')
+const {getUserStatus} = require('../controllers/auth')
 const jwt = require("jsonwebtoken");
 const secret = "shhhhh";
 
@@ -59,7 +59,9 @@ const searchCubes = async (search, from, to) => {
 
 const createCubeGet = async (req, res, next) => {
   res.render("create", {
-    title: "Create | Cube Workshop",
+    title: "Create | Cube Workshop"
+    ,
+    isLoggedIn: req.isLoggedIn
   });
 };
 
@@ -91,14 +93,19 @@ const detailsGet = async (req, res, next) => {
   res.render("details", {
     title: "Details | Cube Workshop",
     ...cube,
+    
+    isLoggedIn: req.isLoggedIn
   });
 };
 
-const homeGet = async (req, res) => {
+const homeGet =  async (req, res) => {
   const cubes = await getAllCubes();
   res.render("index", {
     title: "Cube Workshop",
     cubes,
+    isLoggedIn: req.isLoggedIn
+
+  
   });
 };
 

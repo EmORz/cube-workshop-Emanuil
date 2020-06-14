@@ -1,31 +1,26 @@
-const {Router} = require('express')
-const {checkAuthentcation} = require('../controllers/auth')
+const { Router } = require("express");
+const { authAccess, getUserStatus } = require("../controllers/auth");
 const {
-    createCubeGet,
-    createCubePost,
-    detailsGet,
-    editCubeGet,
-    editCubePost,
-    deleteCubeGet,
-    deleteCubePost,
-     homeGet,
-      homePost
-  } = require("../controllers/cubes");
+  createCubeGet,
+  createCubePost,
+  detailsGet,
+  editCubeGet,
+  editCubePost,
+  deleteCubeGet,
+  deleteCubePost,
+} = require("../controllers/cubes");
 
-const router = Router()
+const router = Router();
 
-router.get("/", homeGet);
-router.post("/", homePost);
+router.get("/create", authAccess, createCubeGet);
+router.post("/create", createCubePost);
 
-router.get("/create", checkAuthentcation, createCubeGet);
-router.post("/create",  createCubePost);
+router.get("/edit/:id", authAccess, editCubeGet);
+router.post("/edit/:id", editCubePost);
 
-router.get('/edit/:id', editCubeGet)
-router.post('/edit/:id', editCubePost)
+router.get("/delete/:id", authAccess, deleteCubeGet);
+router.post("/delete/:id", deleteCubePost);
 
-router.get('/delete/:id', deleteCubeGet)
-router.post('/delete/:id', deleteCubePost)
+router.get("/details/:id", detailsGet);
 
-router.get("/details/:id" ,detailsGet);
-
-module.exports = router
+module.exports = router;

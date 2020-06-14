@@ -1,4 +1,6 @@
 const {Router} = require('express')
+const {authAccess, guessAccess, getUserStatus} = require('../controllers/auth')
+
 const {
     registerUserGet,
     loginUserGet,
@@ -8,10 +10,10 @@ const {
   } = require("../controllers/auth");
 const router = Router()
 
-router.get("/register", registerUserGet);
+router.get("/register", guessAccess, registerUserGet);
 router.post("/register", regiterUserPost);
-router.get("/login", loginUserGet);
+router.get("/login", guessAccess, loginUserGet);
 router.post("/login", loginUserPost);
-router.get('/logout', logout )
+router.get('/logout', authAccess, logout )
 
 module.exports = router

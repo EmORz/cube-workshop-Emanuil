@@ -1,8 +1,5 @@
 const User = require("../models/user");
-const tokenBlacklist = require("../models/token-blacklist");
-const utils = require("../utils");
-const appConfig = require("../app-config");
-//const jwt = require("../utils/jwt");
+
 var jwt = require("jsonwebtoken");
 const secret = "shhhhh";
 
@@ -15,7 +12,32 @@ const generateToken = (data) => {
   return token;
 };
 
-const checkAuthentcation = (req, res, next) => {
+const getUserStatus = (req, res, next) => {
+  const token = req.cookies["aid"];
+  if (!token) {
+    req.isLoggedIn = false;
+  }
+  try {
+    jwt.verify(token, secret);
+    req.isLoggedIn = true
+  } catch (e) {
+    req.isLoggedIn = false;
+    return res.redirect("/");
+  }
+  next();
+};
+
+const guessAccess = (req, res, next) => {
+  const token = req.cookies["aid"];
+  if (token) {
+    
+    return res.redirect("/");
+  }
+
+  next();
+};
+
+const authAccess = (req, res, next) => {
   const token = req.cookies["aid"];
 
   if (!token) {
@@ -23,24 +45,24 @@ const checkAuthentcation = (req, res, next) => {
   }
 
   try {
-    const decodedObj = jwt.verify(token, secret);
-    next()
+   jwt.verify(token, secret);
+    next();
   } catch (e) {
     res.redirect("/login");
   }
- 
-
-  
 };
 const registerUserGet = async (req, res) => {
   res.render("register.hbs", {
-    title: "Register | Page",
+    title: "Register | Page"
+    ,
+    isLoggedIn: req.isLoggedIn
   });
 };
 
 const loginUserGet = async (req, res, next) => {
   res.render("login", {
     title: "Login | Page Update",
+    isLoggedIn: req.isLoggedIn
   });
 };
 
@@ -88,12 +110,10 @@ const regiterUserPost = async (req, res) => {
   res.redirect("/");
 };
 
-const logout =  (req, res) => {
+const logout = (req, res) => {
+  res.clearCookie("aid");
 
-  res.clearCookie('aid')
-
-  res.redirect('/')
-  
+  res.redirect("/");
 };
 
 module.exports = {
@@ -102,5 +122,7 @@ module.exports = {
   loginUserGet,
   loginUserPost,
   logout,
-  checkAuthentcation,
+  authAccess,
+  guessAccess,
+  getUserStatus
 };
