@@ -9,13 +9,14 @@ const {homeGet, homePost} = require('../controllers/cubes')
 const router = Router();
 
 
-router.get("/",  homeGet)
+router.get("/",getUserStatus,  homeGet)
 router.post("/", homePost);
 
 
-router.get("/about", (req, res) => {
+router.get("/about",getUserStatus, (req, res) => {
   res.render("about", {
     title: "About | Cube Workshop",
+    isLoggedIn: req.isLoggedIn
   });
 });
 

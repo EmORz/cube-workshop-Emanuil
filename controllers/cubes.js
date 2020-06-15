@@ -1,5 +1,5 @@
 const Cube = require("../models/cube");
-const {getUserStatus} = require('../controllers/auth')
+const { getUserStatus } = require("../controllers/auth");
 const jwt = require("jsonwebtoken");
 const secret = "shhhhh";
 
@@ -59,9 +59,8 @@ const searchCubes = async (search, from, to) => {
 
 const createCubeGet = async (req, res, next) => {
   res.render("create", {
-    title: "Create | Cube Workshop"
-    ,
-    isLoggedIn: req.isLoggedIn
+    title: "Create | Cube Workshop",
+    isLoggedIn: req.isLoggedIn,
   });
 };
 
@@ -93,19 +92,17 @@ const detailsGet = async (req, res, next) => {
   res.render("details", {
     title: "Details | Cube Workshop",
     ...cube,
-    
-    isLoggedIn: req.isLoggedIn
+
+    isLoggedIn: req.isLoggedIn,
   });
 };
 
-const homeGet =  async (req, res) => {
+const homeGet = async (req, res) => {
   const cubes = await getAllCubes();
   res.render("index", {
     title: "Cube Workshop",
     cubes,
-    isLoggedIn: req.isLoggedIn
-
-  
+    isLoggedIn: req.isLoggedIn,
   });
 };
 
@@ -143,6 +140,7 @@ const deleteCubeGet = (req, res) => {
       title: "Delete Cube",
       cube,
       options,
+      isLoggedIn: req.isLoggedIn,
     });
   });
 };
@@ -163,6 +161,7 @@ const editCubeGet = async (req, res, next) => {
         title: "Edit Cube",
         cube,
         options,
+        isLoggedIn: req.isLoggedIn
       });
     })
     .catch(next);

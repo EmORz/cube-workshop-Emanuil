@@ -9,6 +9,8 @@ const getAccessories = async () => {
 const createAccessoryGet = async (req, res, next) => {
   res.render("createAccessory", {
     title: "Create Accessory",
+    isLoggedIn: req.isLoggedIn
+
   });
 };
 
@@ -41,6 +43,7 @@ const attachGet = async (req, res) => {
     ...cube,
     accessories: notAttachAccesories,
     isFullAttached: cube.accessories.length === accessories.length,
+    isLoggedIn: req.isLoggedIn,
   });
 };
 

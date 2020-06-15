@@ -12,15 +12,15 @@ const {
 
 const router = Router();
 
-router.get("/create", authAccess, createCubeGet);
+router.get("/create", authAccess, getUserStatus, createCubeGet);
 router.post("/create", createCubePost);
 
-router.get("/edit/:id", authAccess, editCubeGet);
+router.get("/edit/:id", authAccess, getUserStatus, editCubeGet);
 router.post("/edit/:id", editCubePost);
 
-router.get("/delete/:id", authAccess, deleteCubeGet);
+router.get("/delete/:id", authAccess, getUserStatus, deleteCubeGet);
 router.post("/delete/:id", deleteCubePost);
 
-router.get("/details/:id", detailsGet);
+router.get("/details/:id",getUserStatus, detailsGet);
 
 module.exports = router;

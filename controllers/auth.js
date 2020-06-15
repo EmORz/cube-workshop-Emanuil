@@ -21,8 +21,7 @@ const getUserStatus = (req, res, next) => {
     jwt.verify(token, secret);
     req.isLoggedIn = true
   } catch (e) {
-    req.isLoggedIn = false;
-    return res.redirect("/");
+    req.isLoggedIn = false;   
   }
   next();
 };

@@ -10,7 +10,7 @@ const {
 
 const router = Router();
 
-router.get("/create/accessory",authAccess, getUserStatus, createAccessoryGet);
+router.get("/create/accessory", getUserStatus, authAccess, createAccessoryGet);
 router.post("/create/accessory", createAccessoryPost);
 
 router.get("/attach/accessory/:id", authAccess,getUserStatus, attachGet);
