@@ -1,7 +1,7 @@
 
 <h1>Edit Cube</h1>
 <div class="form">
-   <form action='/edit/{{cube._id}}' method="POST"></form>
+   <form action='/edit/{{cube.id}}' method="POST"></form>
     <label for="name">Name</label>
     <input type="text" id="name" name="name" value="{{cube.name}}">
     <label for="name">Description</label>
@@ -10,14 +10,14 @@
     <input type="text" id="image" name="imageUrl" value="{{cube.imageURL}}">
     <label for="difficulty">Difficulty</label>
     <select id="difficulty" name="difficultyLevel">
-      {{#each options}}
+      {{!-- {{#each options}}
       {{#if this.selected}}
       <option value="{{@index}}" selected>{{this.title}}</option>
       {{else}}
       <option value="{{@index}}">{{this.title}}</option>
       {{/if}}
 
-      {{/each }}
+      {{/each }} --}}
   
     </select>
     <input type="submit" value="Edit">

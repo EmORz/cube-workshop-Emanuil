@@ -10,7 +10,7 @@ const router = Router();
 
 
 router.get("/",getUserStatus,  homeGet)
-router.post("/", homePost);
+router.post("/", getUserStatus, homePost);
 
 
 router.get("/about",getUserStatus, (req, res) => {

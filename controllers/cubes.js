@@ -89,10 +89,10 @@ const createCubePost = async (req, res, next) => {
 
 const detailsGet = async (req, res, next) => {
   const cube = await getCubeWithAccessories(req.params.id);
+
   res.render("details", {
     title: "Details | Cube Workshop",
     ...cube,
-
     isLoggedIn: req.isLoggedIn,
   });
 };
@@ -117,51 +117,53 @@ const homePost = async (req, res) => {
   });
 };
 
-const deleteCubePost = (req, res) => {
+const deleteCubePost = (req, res, next) => {
   const id = req.params.id;
+  console.log("Ehoooooo :)");
 
-  Cube.deleteOne({ _id: id });
-  console.log(id);
+  Cube.deleteOne({ _id: id })
+    .then(() => {
+      console.log("Ehoooooo :)");
+      res.redirect("/");
+    })
+    .catch(next);
 };
 
-const deleteCubeGet = (req, res) => {
+const deleteCubeGet = (req, res, next) => {
   const id = req.params.id;
+  const token = req.cookies["aid"];
+  const user = jwt.verify(token, secret);
 
-  Cube.findOne({ _id: id }).then((cube) => {
-    const options = [
-      { title: "1 - Very Easy", selected: 1 === cube.difficulty },
-      { title: "2 - Easy", selected: 2 === cube.difficulty },
-      { title: "3 - Medium (Standart 3x3)", selected: 3 === cube.difficulty },
-      { title: "4 - Intermediate", selected: 4 === cube.difficulty },
-      { title: "5 - Expert", selected: 5 === cube.difficulty },
-      { title: "6 - Hardcore", selected: 6 === cube.difficulty },
-    ];
+  console.log(user);
+
+  const userId = user.userID;
+
+  Cube.findOne({ _id: id, creatorId: userId }).then((cube) => {
     res.render("deleteCube", {
       title: "Delete Cube",
       cube,
-      options,
+      user,
       isLoggedIn: req.isLoggedIn,
     });
   });
 };
 
 const editCubeGet = async (req, res, next) => {
-  const id = req.params.id;
-  await Cube.findById(id)
+  const cubeId = req.params.id;
+
+  const token = req.cookies["aid"];
+  const user = jwt.verify(token, secret);
+
+  const userId = user.userID;
+
+  await Cube.findById({ _id: cubeId, creatorId: userId })
     .then((cube) => {
-      const options = [
-        { title: "1 - Very Easy", selected: 1 === cube.difficulty },
-        { title: "2 - Easy", selected: 2 === cube.difficulty },
-        { title: "3 - Medium (Standart 3x3)", selected: 3 === cube.difficulty },
-        { title: "4 - Intermediate", selected: 4 === cube.difficulty },
-        { title: "5 - Expert", selected: 5 === cube.difficulty },
-        { title: "6 - Hardcore", selected: 6 === cube.difficulty },
-      ];
+     
       res.render("editCube", {
         title: "Edit Cube",
         cube,
-        options,
-        isLoggedIn: req.isLoggedIn
+        user,
+        isLoggedIn: req.isLoggedIn,
       });
     })
     .catch(next);
@@ -169,13 +171,25 @@ const editCubeGet = async (req, res, next) => {
 
 const editCubePost = async (req, res, next) => {
   const id = req.params.id;
-  console.log(id);
-  const {
-    name = null,
-    description = null,
-    imageURL = null,
-    difficulty = null,
-  } = req.body;
+  const token = req.cookies["aid"];
+  const user = jwt.verify(token, secret);
+
+  const userId = user.userID;
+  const creatorId = userId;
+  const cube = { ...req.body, id, creatorId };
+ 
+
+  console.log(creatorId);
+  // const token = req.cookies["aid"];
+  //const userId = jwt.verify(token, secret).userID;
+
+  // const testUpdate = await Cube.updateOne(
+  //   { _id: id, creatorId: userId },
+  //   { name, description, imageURL, difficulty, decodedObj }
+  // );
+  //console.log(testUpdate);
+
+  res.redirect("/");
 };
 
 module.exports = {
