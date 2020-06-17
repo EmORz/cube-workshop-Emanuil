@@ -19,9 +19,9 @@ const getUserStatus = (req, res, next) => {
   }
   try {
     jwt.verify(token, secret);
-    req.isLoggedIn = true
+    req.isLoggedIn = true;
   } catch (e) {
-    req.isLoggedIn = false;   
+    req.isLoggedIn = false;
   }
   next();
 };
@@ -29,7 +29,6 @@ const getUserStatus = (req, res, next) => {
 const guessAccess = (req, res, next) => {
   const token = req.cookies["aid"];
   if (token) {
-    
     return res.redirect("/");
   }
 
@@ -44,7 +43,7 @@ const authAccess = (req, res, next) => {
   }
 
   try {
-   jwt.verify(token, secret);
+    jwt.verify(token, secret);
     next();
   } catch (e) {
     res.redirect("/login");
@@ -52,16 +51,15 @@ const authAccess = (req, res, next) => {
 };
 const registerUserGet = async (req, res) => {
   res.render("register.hbs", {
-    title: "Register | Page"
-    ,
-    isLoggedIn: req.isLoggedIn
+    title: "Register | Page",
+    isLoggedIn: req.isLoggedIn,
   });
 };
 
 const loginUserGet = async (req, res, next) => {
   res.render("login", {
     title: "Login | Page Update",
-    isLoggedIn: req.isLoggedIn
+    isLoggedIn: req.isLoggedIn,
   });
 };
 
@@ -70,10 +68,11 @@ const loginUserPost = async (req, res) => {
 
   const user = await User.findOne({ username });
 
-  const userPass = user.password ? user.password : "polop";
+  if (!user) {
+    return res.redirect("/login");
+  }
 
-  console.log(userPass);
-  const status = await bcrypt.compare(password, userPass);
+  const status = await bcrypt.compare(password, user.password);
 
   if (status) {
     const token = generateToken({
@@ -87,26 +86,37 @@ const loginUserPost = async (req, res) => {
   }
 };
 
-const regiterUserPost = async (req, res) => {
+const regiterUserPost = async (req, res, next) => {
   const { username, password } = req.body;
 
   const salt = await bcrypt.genSalt(saltRounds);
   const hashedPass = await bcrypt.hash(password, salt);
+
   const user = new User({
     username,
     password: hashedPass,
   });
 
-  const userObj = await user.save();
+  await user
+    .save()
+    .then((user) => {
+      const token = generateToken({
+        userID: user._id,
+        username: user.username,
+      });
 
-  const token = generateToken({
-    userID: userObj._id,
-    username: userObj.username,
-  });
-
-  res.cookie("aid", token);
-
-  res.redirect("/");
+      res.cookie("aid", token);
+      res.redirect("/");
+    })
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        res.render("register", {
+          errors: err.errors,
+        });
+        return;
+      }
+      next(err)
+    });
 };
 
 const logout = (req, res) => {
@@ -123,5 +133,5 @@ module.exports = {
   logout,
   authAccess,
   guessAccess,
-  getUserStatus
+  getUserStatus,
 };
