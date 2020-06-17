@@ -3,12 +3,14 @@ const mongoose = require("mongoose");
 const cubeShema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: [true, "Name is required!"],
+    
   },
   description: {
     type: String,
-    required: true,
+    required: [true, "Name is required!"],
     maxlength: 2000,
+   
   },
   imageURL: {
     type: String,
@@ -23,6 +25,7 @@ const cubeShema = new mongoose.Schema({
   accessories: [{ type: mongoose.Types.ObjectId, ref: "Accessory" }],
   creatorId: { type: mongoose.Types.ObjectId, ref: "User" },
 });
+
 
 cubeShema.path("imageURL").validate(function (url) {
   return url.includes("http") || url.includes("https");

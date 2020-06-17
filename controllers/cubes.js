@@ -1,5 +1,4 @@
 const Cube = require("../models/cube");
-const { getUserStatus } = require("../controllers/auth");
 const jwt = require("jsonwebtoken");
 
 const secret = "shhhhh";
@@ -78,13 +77,15 @@ const createCubePost = async (req, res, next) => {
     creatorId: decodedObj.userID,
   });
 
-  await cube.save((err) => {
-    if (err) {
-      console.error(err);
-      res.redirect("/create");
-    } else {
-      res.redirect("/");
+  await cube.save({ runValidators: true }).catch((err) => {
+   console.log(err.errors.msq)
+    if (err.name === "ValidationError") {
+      res.render("create", {
+        errors: err.errors,
+      });
+      return;
     }
+    next(err);
   });
 };
 
@@ -120,14 +121,13 @@ const homePost = async (req, res) => {
 
 const deleteCubePost = async (req, res, next) => {
   const id = req.params.id;
- 
 
   try {
     const cube = await Cube.findByIdAndDelete({ _id: id })
       .populate("accessories")
       .lean();
     console.log("This is Deleted!Eyap ;)", cube);
-    res.redirect('/')
+    res.redirect("/");
   } catch (error) {
     console.log(error);
   }
@@ -138,7 +138,7 @@ const deleteCubeGet = async (req, res, next) => {
   const token = req.cookies["aid"];
   const user = jwt.verify(token, secret);
 
-  await Cube.findOne({ _id: id, creatorId: user.userID  })
+  await Cube.findOne({ _id: id, creatorId: user.userID })
     .then((cube) => {
       const options = [
         { title: "1 - Very Easy", selected: 1 === cube.difficultyLevel },
@@ -167,8 +167,9 @@ const editCubeGet = async (req, res, next) => {
   const token = req.cookies["aid"];
   const user = jwt.verify(token, secret);
 
-  await Cube.findOne({ _id: cubeId, creatorId: user.userID  })
+  await Cube.findOne({ _id: cubeId, creatorId: user.userID })
     .then((cube) => {
+      console.log(cube);
       const options = [
         { title: "1 - Very Easy", selected: 1 === cube.difficultyLevel },
         { title: "2 - Easy", selected: 2 === cube.difficultyLevel },
@@ -193,12 +194,20 @@ const editCubeGet = async (req, res, next) => {
 const editCubePost = async (req, res, next) => {
   const id = req.params.id;
 
-  const {name = null, description = null, imageUrl = null, difficultyLevel = null} = req.body;
+  const {
+    name = null,
+    description = null,
+    imageUrl = null,
+    difficultyLevel = null,
+  } = req.body;
   const token = req.cookies["aid"];
   const user = jwt.verify(token, secret);
 
   try {
-    await Cube.updateOne({ _id: id, creatorId: user.userID }, { name, description, imageURL: imageUrl, difficulty: difficultyLevel });
+    await Cube.updateOne(
+      { _id: id, creatorId: user.userID },
+      { name, description, imageURL: imageUrl, difficulty: difficultyLevel }
+    );
     res.redirect("/");
     next();
   } catch (error) {

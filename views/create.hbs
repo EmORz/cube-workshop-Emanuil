@@ -1,9 +1,17 @@
-
+{{>notification}}
 <h1>Create</h1>
 <div class="form">
   <form action='/create' method="POST">
+    {{#if errors.name}}
+    <div class="error">{{ errors.name.message }}</div>
+    {{/if}}
+    <br>
     <label for="name">Name</label>
     <input type="text" id="name" name="name">
+   {{#if errors.description}}
+    <div class="error">{{ errors.description.message }}</div>
+    {{/if}}
+    <br>
     <label for="name">Description</label>
     <textarea id="name" name="description"></textarea>
     <label for="image">ImageUrl</label>

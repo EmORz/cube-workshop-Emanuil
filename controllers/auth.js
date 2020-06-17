@@ -63,7 +63,7 @@ const loginUserGet = async (req, res, next) => {
   });
 };
 
-const loginUserPost = async (req, res) => {
+const loginUserPost = async (req, res, next) => {
   const { username, password } = req.body;
 
   const user = await User.findOne({ username });
@@ -96,7 +96,6 @@ const regiterUserPost = async (req, res, next) => {
     username,
     password: hashedPass,
   });
-
   await user
     .save()
     .then((user) => {
@@ -109,13 +108,15 @@ const regiterUserPost = async (req, res, next) => {
       res.redirect("/");
     })
     .catch((err) => {
+      console.log(err.errors)
       if (err.name === "ValidationError") {
+   
         res.render("register", {
           errors: err.errors,
         });
         return;
       }
-      next(err)
+      next(err);
     });
 };
 
