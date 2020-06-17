@@ -9,8 +9,7 @@ const getAccessories = async () => {
 const createAccessoryGet = async (req, res, next) => {
   res.render("createAccessory", {
     title: "Create Accessory",
-    isLoggedIn: req.isLoggedIn
-
+    isLoggedIn: req.isLoggedIn,
   });
 };
 
@@ -21,8 +20,17 @@ const createAccessoryPost = async (req, res, next) => {
     description,
     imageUrl,
   });
-  await accessory.save();
-  res.redirect("/create/accessory");
+
+  try {
+    await accessory.save();
+    res.redirect("/create/accessory");
+  } catch (error) {
+    res.render("createAccessory", {
+      title: "Create Accessory",
+      isLoggedIn: req.isLoggedIn,
+      error: "Accessory details are not valid!"
+    });
+  }
 };
 
 const attachGet = async (req, res) => {
@@ -59,5 +67,5 @@ module.exports = {
   createAccessoryGet,
   createAccessoryPost,
   attachGet,
-  attachPost
+  attachPost,
 };

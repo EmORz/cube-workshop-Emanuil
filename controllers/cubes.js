@@ -70,23 +70,23 @@ const createCubePost = async (req, res, next) => {
 
   const decodedObj = jwt.verify(token, secret);
   const cube = new Cube({
-    name,
-    description,
+    name: name.trim(),
+    description: description.trim(),
     imageURL: imageUrl,
     difficulty: difficultyLevel,
     creatorId: decodedObj.userID,
   });
 
-  await cube.save({ runValidators: true }).catch((err) => {
-   console.log(err.errors.msq)
-    if (err.name === "ValidationError") {
-      res.render("create", {
-        errors: err.errors,
-      });
-      return;
-    }
-    next(err);
-  });
+  try {
+    await cube.save();
+    res.redirect("/");
+  } catch (error) {
+    return res.render("create", {
+      title: "Create | Cube Workshop",
+      isLoggedIn: req.isLoggedIn,
+      error: "Cube details are not valid!"
+    });
+  }
 };
 
 const detailsGet = async (req, res, next) => {

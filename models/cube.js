@@ -4,12 +4,16 @@ const cubeShema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Name is required!"],
+    match: [/^[A-Za-z0-9 ]+$/, 'cube name is not valid!'],
+    minlength: 5
     
   },
   description: {
     type: String,
     required: [true, "Name is required!"],
     maxlength: 2000,
+    match: [/^[A-Za-z0-9 ]+$/, 'cube description is not valid!'],
+    minlength: 20
    
   },
   imageURL: {

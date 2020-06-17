@@ -4,12 +4,17 @@ const accessoriesShema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    match: [/^[a-zA-Z0-9 ]+$/, 'name  is not valid!'],
+    minlength: 5
   },
   imageUrl: {
     type: String,
   },
   description: {
     type: String,
+    maxlength: 2000,    
+    match: [/^[a-zA-Z0-9 ]+$/, 'Accessory description is not valid!'],
+    minlength: 20
   },
 
   

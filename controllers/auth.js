@@ -50,74 +50,94 @@ const authAccess = (req, res, next) => {
   }
 };
 const registerUserGet = async (req, res) => {
+  const error = req.query.error?'Username or Password is not valid!': null;
+
   res.render("register.hbs", {
     title: "Register | Page",
     isLoggedIn: req.isLoggedIn,
+    error
   });
 };
 
-const loginUserGet = async (req, res, next) => {
+const loginUserGet = async (req, res) => {
+  const error = req.query.error?'Username or Password is not correct!': null;
+
   res.render("login", {
     title: "Login | Page Update",
     isLoggedIn: req.isLoggedIn,
+    error
   });
 };
 
-const loginUserPost = async (req, res, next) => {
+const loginUserPost = async (req, res) => {
   const { username, password } = req.body;
 
-  const user = await User.findOne({ username });
+  try {
+    const user = await User.findOne({ username });
 
-  if (!user) {
-    return res.redirect("/login");
-  }
+    if (!user) {
+      return {
+        error: true,
+        message: "There is no such user!"
+      };
+    }
 
-  const status = await bcrypt.compare(password, user.password);
+  
+    const status = await bcrypt.compare(password, user.password);
 
-  if (status) {
-    const token = generateToken({
-      userID: user._id,
-      username: user.username,
-    });
-    res.cookie("aid", token);
-    res.redirect("/");
-  } else {
-    res.redirect("/login");
-  }
-};
-
-const regiterUserPost = async (req, res, next) => {
-  const { username, password } = req.body;
-
-  const salt = await bcrypt.genSalt(saltRounds);
-  const hashedPass = await bcrypt.hash(password, salt);
-
-  const user = new User({
-    username,
-    password: hashedPass,
-  });
-  await user
-    .save()
-    .then((user) => {
+    if (status) {
       const token = generateToken({
         userID: user._id,
         username: user.username,
       });
+      res.cookie("aid", token); 
+       
+    }
+    return {
+      error: status ? false : true,
+      message: status || 'Wrong password'
+  }
+  } catch (err) {
+    return {
+      error: true,
+      message: "There is no such user!",
+      status
+    };
+  }
+};
 
-      res.cookie("aid", token);
-      res.redirect("/");
-    })
-    .catch((err) => {
-      console.log(err.errors)
-      if (err.name === "ValidationError") {
-   
-        res.render("register", {
-          errors: err.errors,
-        });
-        return;
-      }
-      next(err);
+const regiterUserPost = async (req, res) => {
+  const {username, password } = req.body;
+
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hashedPass = await bcrypt.hash(password, salt);
+
+
+  try {
+    const user = new User({
+      username,
+      password: hashedPass,
     });
+
+    const userObj = await user.save();
+    const token = generateToken({
+      userID: userObj._id,
+      username: userObj.username,
+    });
+
+    res.cookie("aid", token);
+    res.redirect("/");
+
+    return token
+
+  } catch (err) {
+
+    return{
+      error: true,
+      message: err
+    }
+  }
+
 };
 
 const logout = (req, res) => {
