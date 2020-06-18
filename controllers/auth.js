@@ -20,7 +20,6 @@ const getUserStatus = (req, res, next) => {
   try {
     jwt.verify(token, secret);
     req.isLoggedIn = true;
-    
   } catch (e) {
     req.isLoggedIn = false;
   }
@@ -51,22 +50,19 @@ const authAccess = (req, res, next) => {
   }
 };
 const registerUserGet = async (req, res) => {
-  const error = req.query.error?'Username or Password is not valid!': null;
-
   res.render("register.hbs", {
     title: "Register | Page",
     isLoggedIn: req.isLoggedIn,
-    error
   });
 };
 
 const loginUserGet = async (req, res) => {
-  const error = req.query.error?'Username or Password is not correct!': null;
+  //const error = req.query.error?'Username or Password is not correct!': null;
 
   res.render("login", {
     title: "Login | Page Update",
     isLoggedIn: req.isLoggedIn,
-    error
+    //error
   });
 };
 
@@ -77,13 +73,13 @@ const loginUserPost = async (req, res) => {
     const user = await User.findOne({ username });
 
     if (!user) {
-      return {
-        error: true,
-        message: "There is no such user!"
-      };
+      return res.render("login", {
+        title: "Login | Cube Workshop",
+        isLoggedIn: req.isLoggedIn,
+        error: "There is no such user!",
+      });
     }
 
-  
     const status = await bcrypt.compare(password, user.password);
 
     if (status) {
@@ -91,28 +87,29 @@ const loginUserPost = async (req, res) => {
         userID: user._id,
         username: user.username,
       });
-      res.cookie("aid", token); 
-       
+      res.cookie("aid", token);
+    } else{
+      return res.render("login", {
+        title: "Login | Cube Workshop",
+        isLoggedIn: req.isLoggedIn,
+        error: "Wrong Username or Password!",
+      });
     }
-    return {
-      error: status ? false : true,
-      message: status || 'Wrong password'
-  }
+    return true
   } catch (err) {
-    return {
-      error: true,
-      message: "There is no such user!",
-      status
-    };
+    return res.render("login", {
+      title: "Login | Cube Workshop",
+      isLoggedIn: req.isLoggedIn,
+      error: "Cube details are not valid!",
+    });
   }
 };
 
 const regiterUserPost = async (req, res) => {
-  const {username, password } = req.body;
+  const { username, password } = req.body;
 
   const salt = await bcrypt.genSalt(saltRounds);
   const hashedPass = await bcrypt.hash(password, salt);
-
 
   try {
     const user = new User({
@@ -129,16 +126,14 @@ const regiterUserPost = async (req, res) => {
     res.cookie("aid", token);
     res.redirect("/");
 
-    return token
-
+    return token;
   } catch (err) {
-
-    return{
-      error: true,
-      message: err
-    }
+    return res.render("register", {
+      title: "Register | Cube Workshop",
+      isLoggedIn: req.isLoggedIn,
+      error: "Username or password is not valid",
+    });
   }
-
 };
 
 const logout = (req, res) => {

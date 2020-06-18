@@ -5,7 +5,7 @@ const cubeShema = new mongoose.Schema({
     type: String,
     required: true,
     match: [/^[A-Za-z0-9 ]+$/, 'cube name is not valid!'],
-    minlength: 2
+    minlength: 5
     
   },
   description: {
@@ -13,7 +13,7 @@ const cubeShema = new mongoose.Schema({
     required: true,
     maxlength: 2000,
     match: [/^[A-Za-z0-9 ]+$/, 'cube description is not valid!'],
-    minlength: 2
+    minlength: 20
    
   },
   imageUrl: {
