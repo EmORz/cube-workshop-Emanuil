@@ -23,7 +23,7 @@ const createAccessoryPost = async (req, res, next) => {
 
   try {
     await accessory.save();
-    res.redirect("/create/accessory");
+    res.redirect("/");
   } catch (error) {
     res.render("createAccessory", {
       title: "Create Accessory",

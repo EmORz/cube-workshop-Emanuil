@@ -20,6 +20,7 @@ const getUserStatus = (req, res, next) => {
   try {
     jwt.verify(token, secret);
     req.isLoggedIn = true;
+    
   } catch (e) {
     req.isLoggedIn = false;
   }

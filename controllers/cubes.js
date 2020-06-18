@@ -64,27 +64,29 @@ const createCubeGet = async (req, res, next) => {
   });
 };
 
-const createCubePost = async (req, res, next) => {
+const createCubePost = async (req, res) => {
   const { name, description, imageUrl, difficultyLevel } = req.body;
   const token = req.cookies["aid"];
 
   const decodedObj = jwt.verify(token, secret);
+
   const cube = new Cube({
     name: name.trim(),
     description: description.trim(),
-    imageURL: imageUrl,
+    imageUrl,
     difficulty: difficultyLevel,
     creatorId: decodedObj.userID,
   });
 
   try {
     await cube.save();
+
     res.redirect("/");
   } catch (error) {
     return res.render("create", {
       title: "Create | Cube Workshop",
       isLoggedIn: req.isLoggedIn,
-      error: "Cube details are not valid!"
+      error: "Cube details are not valid!",
     });
   }
 };
@@ -115,7 +117,7 @@ const homePost = async (req, res) => {
 
   res.render("index", {
     title: "Cube Workshop | Search Result",
-    cubes,
+    cubes
   });
 };
 

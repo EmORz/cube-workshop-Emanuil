@@ -10,10 +10,10 @@ const {
 
 const router = Router();
 
-router.get("/create/accessory", getUserStatus, authAccess, createAccessoryGet);
+router.get("/create/accessory",  authAccess, getUserStatus, createAccessoryGet);
 router.post("/create/accessory", createAccessoryPost);
 
-router.get("/attach/accessory/:id", authAccess,getUserStatus, attachGet);
+router.get("/attach/accessory/:id",  authAccess,getUserStatus, attachGet);
 router.post("/attach/accessory/:id", attachPost);
 
 module.exports = router;

@@ -12,14 +12,14 @@ const {
 
 const router = Router();
 
-router.get("/create", authAccess, getUserStatus, createCubeGet);
+router.get("/create", getUserStatus, authAccess, createCubeGet);
 router.post("/create", createCubePost);
 
 router.get("/edit/:id", authAccess, getUserStatus, editCubeGet);
 router.post("/edit/:id", editCubePost);
 
 router.get("/delete/:id", authAccess, getUserStatus, deleteCubeGet);
-router.post("/delete/:id", deleteCubePost);
+router.post("/delete/:id", authAccess, getUserStatus,deleteCubePost);
 
 router.get("/details/:id",getUserStatus, detailsGet);
 

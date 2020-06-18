@@ -4,11 +4,12 @@ const accessoriesShema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    match: [/^[a-zA-Z0-9 ]+$/, 'name  is not valid!'],
+    match: [/^[a-zA-Z0-9 ]+$/, 'Accessory name  is not valid!'],
     minlength: 5
   },
   imageUrl: {
     type: String,
+    required: true
   },
   description: {
     type: String,
@@ -35,7 +36,4 @@ module.exports = mongoose.model("Accessory", accessoriesShema);
 
 
 
-// •	Name - (String, required)
-// •	ImageUrl - (String, required, http/https validation)
-// •	Description - (String, required, max length validation)
-// •	Cubes - (ObjectId, ref Cubes Model)
+

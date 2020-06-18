@@ -3,20 +3,20 @@ const mongoose = require("mongoose");
 const cubeShema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Name is required!"],
+    required: true,
     match: [/^[A-Za-z0-9 ]+$/, 'cube name is not valid!'],
-    minlength: 5
+    minlength: 2
     
   },
   description: {
     type: String,
-    required: [true, "Name is required!"],
+    required: true,
     maxlength: 2000,
     match: [/^[A-Za-z0-9 ]+$/, 'cube description is not valid!'],
-    minlength: 20
+    minlength: 2
    
   },
-  imageURL: {
+  imageUrl: {
     type: String,
     required: true,
   },
@@ -31,7 +31,7 @@ const cubeShema = new mongoose.Schema({
 });
 
 
-cubeShema.path("imageURL").validate(function (url) {
+cubeShema.path("imageUrl").validate(function (url) {
   return url.includes("http") || url.includes("https");
 }, "Image url is not valid!");
 
